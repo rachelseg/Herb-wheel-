@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sanctuary Herb Wheel</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Karla:wght@400;500;600&display=swap">
+<style>
+/* Layout: single dark apothecary column — title, framework tabs + lens panel, wheel, herb card, cup */
+:root{
+  --bg:#1B221D;--surface:#252E27;--surface-2:#2E382F;--raised:#222A24;--well:#1E2620;
+  --ink:#EDE6D9;--ink-2:#D6CCB8;--muted:#A89D88;--faint:#8C8270;--cream:#F1E2C2;
+  --brass:#C2A26B;--brass-ink:#E8D3A6;--brass-deep:#3D3526;
+  --line:rgba(237,230,217,.16);--line-2:rgba(237,230,217,.28);
+  --warn:#D9A35B;--danger:#D98A7A;--ok:#9DB38A;
+  --display:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --body:'Karla',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-block:24px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font-family:inherit;color:inherit}
+button:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.serif{font-family:var(--display);font-weight:500}
+header{text-align:center;margin-bottom:6px}
+header h1{font-family:var(--display);font-weight:500;font-size:34px;line-height:1.05;color:var(--cream);margin:0;text-wrap:balance}
+header p{margin:6px 0 0;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tab{padding:13px 12px;border-radius:10px;border:.5px solid var(--line);background:var(--raised);color:var(--ink-2);font-size:15px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px}
+.tab small{font-size:12px;color:var(--faint)}
+.tab.on{background:#2C2A21;border:1.5px solid var(--brass);color:var(--cream)}
+.tab.on small{color:var(--brass-ink)}
+.panel{background:var(--surface);border:.5px solid rgba(194,162,107,.45);border-radius:12px;padding:14px}
+.panel-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.panel-h span:first-child{font-family:var(--display);font-size:24px;color:var(--cream)}
+.eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.lens{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:11px 12px;margin-top:8px;border-radius:8px;border:.5px solid var(--line);background:var(--well);font-size:15px;text-align:left;cursor:pointer}
+.lens .l{display:flex;align-items:center;gap:10px}
+.lens .dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--muted);flex:none}
+.lens small{font-size:12px;color:var(--muted)}
+.lens.on{background:var(--brass);color:var(--bg);border-color:var(--brass)}
+.lens.on .dot{border-color:var(--bg);background:var(--bg);box-shadow:inset 0 0 0 3px var(--brass)}
+.lens.on small{color:var(--brass-deep)}
+.view{font-size:12px;color:var(--faint)}
+.path{min-height:30px;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.crumb{font-size:12px;padding:5px 11px;border-radius:999px;border:.5px solid rgba(194,162,107,.5);background:rgba(194,162,107,.15);color:var(--brass-ink);cursor:pointer}
+svg.wheel{display:block;width:100%;max-width:100%;touch-action:manipulation}
+.n{cursor:pointer;transition:opacity .2s}.dim{opacity:.18}.soft{opacity:.5}
+.box{background:var(--surface);border-radius:12px;padding:14px 16px}
+.cupbox{border:.5px solid rgba(194,162,107,.35)}
+.tg{display:inline-block;font-size:12px;padding:3px 9px;border-radius:6px;margin:4px 4px 0 0;background:var(--surface-2);color:var(--ink-2);border:none}
+button.tg{cursor:pointer;font-size:13px;padding:6px 11px;color:var(--ink);border:.5px solid var(--line)}
+.btn{background:transparent;border:.5px solid var(--line-2);color:var(--ink);border-radius:8px;padding:8px 12px;font-size:13px;cursor:pointer}
+.btn.brass{border-color:var(--brass);color:var(--brass-ink)}
+.mu{color:var(--muted)}
+.hint{font-size:14px;color:var(--muted);line-height:1.6;margin:0}
+.fl{display:flex;gap:10px;font-size:13px;line-height:1.5;margin-top:8px;color:var(--ink-2)}
+.fl i{width:8px;height:8px;border-radius:50%;flex:none;margin-top:6px}
+.sec{margin-top:18px;padding-top:14px;border-top:.5px solid var(--line)}
+.forms{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.form{text-align:left;padding:10px 12px;border-radius:8px;border:.5px solid var(--line);background:var(--well);cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
+.form b{font-weight:500;font-size:14px;color:var(--ink)}
+.form small{font-size:12px;color:var(--muted)}
+.form .best{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--brass)}
+.form.on{border:1.5px solid var(--brass);background:#2C2A21}
+.recipe{margin-top:12px;background:var(--well);border-radius:10px;padding:14px}
+.recipe h3{font-family:var(--display);font-weight:500;font-size:22px;color:var(--cream);margin:0}
+.recipe ol{margin:10px 0 0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+.recipe li{font-size:14px;line-height:1.55;color:var(--ink-2);padding-left:4px}
+.recipe li::marker{color:var(--brass);font-family:var(--display);font-size:17px}
+.fits{font-size:13px;margin-top:8px;color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){.n{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>The Botanical Sanctuary</h1>
+    <p>Herb inventory wheel</p>
+  </header>
+  <div class="tabs" id="fws"></div>
+  <div class="panel" id="panel"></div>
+  <div class="view" id="view"></div>
+  <div class="path" id="path"></div>
+  <svg class="wheel" viewBox="-235 -235 470 470" role="img" aria-label="Radial map of 27 herbs. Center circles show energetics, the plum ring shows the chosen framework, and herbs sit on the outer ring."><g id="L"></g><g id="N"></g></svg>
+  <div class="box" id="card"></div>
+  <div class="box cupbox" id="cupbox"></div>
+  <div><button id="rs" class="btn">Reset filters</button></div>
+</div>
+
+<script>
+window.addEventListener('error',function(e){var c=document.getElementById('card');if(c&&!c.dataset.err){c.dataset.err=1;c.innerHTML='<p class="hint">The wheel hit a snag loading: '+String(e.message).replace(/</g,'&lt;')+'</p>'}});
+</script>
+<script>
+(function(){
+const NEU=['n','Neutral','#5E564B','#A39885'];
+const LY={
+temp:{k:1,name:'Temperature',nodes:[['w','Warming','#8E4A33','#C77A5C'],NEU,['c','Cooling','#244F4B','#5E9C94']]},
+moist:{k:2,name:'Moisture',nodes:[['m','Moist','#2F5A4A','#6FA38A'],NEU,['d','Dry','#7A6235','#C4A060']]},
+ten:{k:9,name:'Tension',nodes:[['r','Relaxing','#4A5A35','#93A86E','Relaxant (loosens)'],['n','Neutral','#5E564B','#A39885','Neutral tone'],['t','Tighten','#5A3448','#B07A98','Astringent (tightens)']]},
+type:{k:3,name:'Nervine or adaptogen',nodes:[['r','Calming','#5A3448','#B07A98','Calming nervine'],['u','Uplifting','#7A6235','#C4A060','Uplifting nervine'],['a','Adaptogen','#4A5A35','#93A86E','Adaptogen']]},
+uses:{k:4,name:'Common use',nodes:[['C','Colds','Colds and immune'],['R','Cough','Cough and respiratory'],['D','Digest','Digestion'],['X','Detox','Detox and cleansing'],['N','Calm','Nerves and sleep'],['S','Skin','Skin and wounds'],['T','Nourish','Nutritive'],['H','Heart','Heart and circulation'],['L','Milk','Lactation']]},
+sys:{k:5,name:'Body system',nodes:[['I','Immune','Immune and lymph'],['R','Lungs','Lungs and throat'],['G','Gut','Digestive tract'],['N','Nerves','Nervous system'],['S','Skin','Skin'],['U','Urinary','Kidneys and bladder'],['L','Liver','Liver'],['H','Heart','Heart and circulation'],['M','Muscle','Muscles and joints'],['P','Repro','Reproductive']]},
+sym:{name:'Symptoms'},
+act:{k:6,name:'Action',nodes:[['A','Tighten','Astringent (tightens, tones)'],['D','Soothe','Demulcent (soothes, coats)'],['B','Bitter','Bitter (wakes up digestion)'],['S','Sweat','Diaphoretic (opens sweat)'],['F','Defend','Antimicrobial (fights germs)'],['C','Settle','Carminative (eases gas)'],['U','Flush','Diuretic (moves fluids)'],['E','Clear','Expectorant (moves mucus)'],['V','Heal','Vulnerary (heals tissue)'],['P','Ease','Antispasmodic (eases cramps)']]},
+taste:{k:7,name:'Taste',nodes:[['B','Bitter','Bitter'],['S','Sweet','Sweet'],['O','Sour','Sour'],['P','Spicy','Pungent'],['L','Salty','Salty'],['A','Aroma','Aromatic'],['N','Bland','Bland']]}};
+// [name, temp, moist, type, uses, systems, actions, taste, note, tension, forms]
+const H=[
+["Rosemary","w","d","u","DNH","NHGM","FCP","PBA","Focus, memory, circulation","r","TSXBV"],
+["Sage","w","d","u","CS","RSGP","AFC","PBA","Sore throats, astringent rinse","t","TGX"],
+["Thyme","w","d","","CR","RIG","FEPC","PA","Chest colds, germ fighting","r","TVXG"],
+["Fenugreek","w","m","","DL","GP","DE","BP","Digestion, milk supply. Avoid in pregnancy","n","DF"],
+["Moringa","w","n","a","T","IH","","BP","Mineral-rich green superfood","n","FT"],
+["Heather","n","d","r","XN","UN","AU","B","Gentle urinary support, calming","t","T"],
+["Yarrow","n","d","","CSH","ISHP","ASVB","BPA","Fevers, stops bleeding","t","TXSP"],
+["Horehound","n","d","","R","RG","EB","B","Loosens stuck coughs","n","TX"],
+["Licorice","n","m","a","R","RG","DEP","S","Soothing, sweetens blends. Avoid with high blood pressure","r","DX"],
+["Calendula","n","d","","XS","SIG","VAF","B","Skin healing, lymph","t","STPM"],
+["Flaxseed","n","m","","DT","GH","D","NS","Gentle bulk, omega-3s","n","FC"],
+["Bentonite","n","d","","S","S","A","N","Clay masks and poultices. External use","t","M"],
+["Chamomile","c","n","r","DNS","GNS","CPBV","BAS","Calm belly, calm mind","r","TSBXM"],
+["Lavender","c","d","r","NS","NS","FPVC","PAB","Sleep, stress, skin","r","TSBVM"],
+["Lemon balm","c","n","r","DN","NG","CPF","OA","Uplifts mood, settles stomach","r","TX"],
+["Mint","c","d","u","CRDN","GRN","CPS","PA","Clears head and sinuses, digestion","r","TV"],
+["Jasmine","c","n","r","N","NP","P","AS","Mood lifting, aromatic","r","T"],
+["Echinacea","c","d","","C","IS","F","PB","Immune response at onset","n","XT"],
+["Elderflower","c","d","","CR","IR","SU","AS","Fevers, sinus, colds","r","TX"],
+["Rosehips","c","n","","CT","IH","A","OS","Vitamin C, tart","t","D"],
+["Marshmallow","c","m","","RDS","RGUS","DV","SN","Soothes throat, gut, skin","n","CP"],
+["Dandelion rt","c","d","","DX","LG","B","BS","Liver, bitter digestive","n","DX"],
+["Dandelion lf","c","d","","XT","ULG","UB","BL","Diuretic, mineral-rich","n","T"],
+["Hibiscus","c","d","","XTH","HU","AU","O","Blood pressure, tart and cooling","t","TC"],
+["Lemongrass","c","n","","D","GN","CF","PA","Bright flavor, digestion","r","T"],
+["Blackberry rt","c","d","","D","G","A","B","Astringent for loose stools","t","D"],
+["Comfrey","c","m","","S","MS","VD","N","Bruises and sprains. External only","n","SP"]];
+const FM={
+T:['Herbal tea','Leaves and flowers, steeped',['Use 1 to 2 tsp dried herb per 8 oz cup.','Pour just-boiled water over the herbs.','Cover while it steeps for 5 to 10 minutes so the aromatic oils stay in the cup.','Strain and sip. Up to 3 cups a day.']],
+D:['Decoction','Roots, seeds, and hips, simmered',['Use 1 tbsp roots, seeds, or hips per 12 oz cold water.','Bring to a boil in a covered pot.','Lower to a simmer for 15 to 20 minutes.','Strain. Roots and hips need steady heat to release what is locked inside.']],
+W:['Two-step tea','Simmer the tough parts, steep the tender ones',null],
+C:['Cold infusion','Steeped cool, slow and gentle',['Use 1 tbsp herb per 8 oz room-temperature water.','Steep 4 to 8 hours, or overnight in the fridge.','Strain. Cold water keeps marshmallow\'s slippery mucilage intact and makes hibiscus bright and tart.']],
+S:['Infused oil and salve','For skin, bruises, and balms',['Fill a clean, dry jar halfway with dried herb. Never use fresh herb, which can mold in oil.','Cover with oil by an inch. Sunflower or sweet almond from your shelf both work well.','Warm method: set the jar in a double boiler on the lowest heat for 2 to 4 hours. Slow method: a sunny window for 4 to 6 weeks, shaking daily.','Strain through cheesecloth and squeeze out every drop.','For a rich balm, gently melt 3 parts beef tallow with 1 part infused oil. For a firmer salve, use about 1 oz beeswax per 8 oz oil.','Pour into tins and let set. Hemp seed oil spoils quickly, so stir it in at the end if you use it.']],
+X:['Tincture','Concentrated, long shelf life',['Fill a jar halfway with dried herb.','Cover by an inch with 80 to 100 proof vodka.','Cap, label with the herb and date, and shake daily for 4 to 6 weeks.','Strain into amber dropper bottles.','Typical use is 1 to 2 droppers in a little water. For alcohol-free, use 3 parts glycerin to 1 part water instead.']],
+G:['Gargle','For throat and mouth',['Make a double-strength tea: 2 tbsp herb per 8 oz water, steeped 15 minutes.','Cool to warm and stir in a pinch of salt.','Gargle and spit several times a day.']],
+P:['Compress or poultice','Applied straight to the spot',['Compress: soak a clean cloth in strong warm tea, wring it out, and hold it on the area for 15 to 20 minutes.','Poultice: mix crushed or powdered herb with a little hot water into a thick paste.','Spread the paste on the skin, cover with a cloth, and leave it 20 to 30 minutes.']],
+M:['Clay mask','Draws out and tones skin',['Use a glass or wooden bowl and spoon, since metal reacts with clay.','Mix 1 tbsp bentonite with enough liquid for a smooth paste: water, cooled chamomile or calendula tea, or witch hazel.','Apply, then rinse off after about 10 minutes, before it dries completely.']],
+V:['Steam','Opens sinuses and airways',['Put a small handful of herbs in a large heatproof bowl.','Pour 4 cups of boiling water over them.','Tent a towel over your head, close your eyes, and breathe slowly for 5 to 10 minutes.']],
+B:['Bath or soak','Full body or feet',['Make 4 cups of strong tea, or tie 1/2 cup herbs in a muslin bag.','Add to a warm bath or foot soak.','Soak for 15 to 20 minutes.']],
+F:['Food and powder','Stirred into meals',['Stir 1/2 to 1 tsp powder into smoothies, oatmeal, soups, or sauces.','Grind flaxseed fresh, or soak whole seeds overnight in water for a soothing gel.']]};
+const F_ORD='WTDCSXGPMVBF';
+const INTERNAL='TDCXFGW';
+const SY={
+G:[['g1','Diarrhea','Diarrhea','Loose and wet','tighten and dry','-dt','Blackberry rt,Chamomile,Yarrow','Astringents tone loose tissue and slow fluid loss. Chamomile calms the cramping.'],['g2','Constip.','Is it hard and dry, or tight and crampy?',[['g2a','Hard and dry','Constipation, dry','Dry','moisten','-m-','Flaxseed,Marshmallow,Licorice','Mucilage adds moisture and bulk so things move.'],['g2b','Tight and crampy','Constipation, tense','Tight','relax','--r','Chamomile,Lemon balm,Mint','Stress clamps the gut. Relaxants release it.']]],['g3','Gas','Gas and bloating','Cold and stuck','warm and move','w--','Mint,Lemongrass,Rosemary,Fenugreek,Thyme,Chamomile','Carminatives get trapped gas moving.'],['g4','Heartburn','Heartburn','Hot and irritated','cool and soothe','cm-','Marshmallow,Chamomile,Licorice','Demulcents coat the lining while cooling herbs calm the burn.'],['g5','Nausea','Nausea','Unsettled','settle','---','Mint,Lemon balm,Chamomile,Lemongrass','Aromatic herbs settle a queasy stomach.'],['g6','Cramps','Stomach cramps','Tight','relax','--r','Chamomile,Mint,Lemon balm,Lavender','Antispasmodics unclench the gut muscles.'],['g7','Sluggish','Sluggish digestion','Cold and stuck','warm and stimulate','wd-','Rosemary,Dandelion rt,Fenugreek,Thyme','Bitters before meals wake up digestion. Warming herbs get it moving.']],
+R:[['r1','Cough','Is it wet and rattly, or dry and hacking?',[['r1a','Wet and rattly','Cough, wet','Wet and cold','warm and dry','wd-','Thyme,Horehound,Sage','Warming expectorants dry up mucus and move it out.'],['r1b','Dry and hacking','Cough, dry','Dry and irritated','moisten and soothe','-m-','Marshmallow,Licorice,Flaxseed','Demulcents coat a raw throat and calm the tickle.']]],['r2','Throat','Sore throat','Hot and irritated','cool and soothe','c--','Sage,Marshmallow,Licorice,Thyme,Echinacea','A sage gargle tightens and fights germs. Marshmallow soothes.'],['r3','Stuffy','Stuffy sinuses','Wet and stuck','dry and open','-d-','Thyme,Mint,Rosemary,Elderflower','Aromatic herbs open passages. Try them as a steam too.'],['r4','Tight','Tight chest','Tight','relax','--r','Thyme,Licorice,Mint','Antispasmodics ease a tight, spasmy chest.']],
+I:[['i1','Onset','First signs of a cold','Early','defend','---','Echinacea,Elderflower,Thyme','Act at the first tickle, while your body can still head it off.'],['i2','Fever','Hot and dry, or chilled and shivering?',[['i2a','Hot, not sweating','Fever, hot and dry','Hot and tight','cool and open sweat','c-r','Elderflower,Yarrow,Mint,Lemon balm','Relaxing diaphoretics open the pores so heat can release.'],['i2b','Chilled, shivering','Fever with chills','Cold and tight','warm','w-r','Thyme,Rosemary,Sage,Yarrow','Warming herbs support the body as it heats up.']]],['i3','Run down','Run down','Depleted','nourish','---','Moringa,Rosehips,Dandelion lf,Hibiscus,Licorice','Mineral- and vitamin-rich herbs rebuild reserves.'],['i4','Glands','Swollen glands','Stuck','move lymph','---','Calendula,Echinacea','Lymph movers help clear congestion.']],
+N:[['n1','Anxious','Wired and anxious','Hot and tight','cool and relax','c-r','Lemon balm,Lavender,Chamomile,Jasmine','Cooling, relaxing nervines bring the nervous system down.'],['n2','Sleep','Can\'t sleep','Tight','relax','--r','Chamomile,Lavender,Lemon balm,Heather','Calming nervines ease you toward sleep.'],['n3','Foggy','Brain fog','Cold and stuck','warm and uplift','w--','Rosemary,Mint,Sage,Moringa','Uplifting aromatics wake up focus.'],['n4','Low mood','Low mood','Heavy','lift','---','Lemon balm,Jasmine,Lavender,Rosemary','Bright, aromatic herbs lift the spirits.'],['n5','Burnout','Burnout','Depleted','nourish and restore','-m-','Licorice,Moringa,Rosehips','Adaptogens and nourishing herbs rebuild reserves.'],['n6','Headache','Tension headache','Tight','relax','--r','Lavender,Mint,Chamomile,Rosemary','Relaxants release tension. Mint cools the head.']],
+S:[['s1','Rash','Is it weepy and oozing, or dry and cracked?',[['s1a','Weepy, oozing','Skin, weepy','Wet and loose','dry and tighten','-dt','Calendula,Yarrow,Bentonite,Sage','Astringents and clay draw out moisture and tone tissue.'],['s1b','Dry, cracked','Skin, dry','Dry','moisten','-m-','Comfrey,Marshmallow,Calendula','Moistening herbs, best in an oil or salve, soften and heal.']]],['s2','Cuts','Cuts and scrapes','Open','heal and protect','---','Yarrow,Calendula,Lavender','Yarrow stops bleeding. Calendula speeds healing.'],['s3','Itchy','Itchy or inflamed','Hot','cool and soothe','c--','Chamomile,Calendula,Marshmallow,Lavender','Cooling, soothing herbs calm irritated skin.'],['s4','Oily','Oily, breakouts','Wet and hot','cool and dry','cd-','Calendula,Bentonite,Lavender,Sage','Clay and astringents absorb oil and tighten pores.'],['s5','Bruises','Bruises','Stuck','heal','---','Comfrey,Yarrow,Calendula','Comfrey and yarrow help tissue repair.']],
+U:[['u1','Burning','Burning urination','Hot and irritated','cool and soothe','cm-','Marshmallow,Heather','Demulcents coat the tract. Heather gently tones.'],['u2','Puffy','Water retention','Wet','flush','-d-','Dandelion lf,Hibiscus,Elderflower,Heather','Diuretics move fluid out.']],
+L:[['l1','Sluggish','Sluggish after heavy food','Stuck','stimulate','---','Dandelion rt,Dandelion lf,Rosemary','Bitters get bile flowing.'],['l2','Irritable','Hot and irritable','Hot','cool','c--','Dandelion rt,Hibiscus,Lemon balm','Cooling bitters and sours clear heat.']],
+H:[['h1','High BP','High blood pressure','Hot and tight','cool and relax','c-r','Hibiscus,Yarrow,Lemon balm','Hibiscus is the standout here. Skip licorice.'],['h2','Cold feet','Cold hands and feet','Cold','warm and circulate','w--','Rosemary,Thyme,Sage','Warming herbs push circulation outward.']],
+M:[['m1','Sore','Sore muscles','Tight','relax','--r','Rosemary,Lavender,Chamomile','Best as a bath, soak, or massage oil.'],['m2','Sprain','Sprains and bruises','Stuck','heal','---','Comfrey,Yarrow,Calendula','Use as a compress or salve.'],['m3','Spasms','Muscle spasms','Tight','relax','--r','Chamomile,Lavender,Lemon balm,Thyme','Antispasmodics release cramping.']],
+P:[['p1','Cramps','Menstrual cramps','Tight','relax','--r','Chamomile,Lemon balm,Lavender,Yarrow','Relaxants unclench the uterus.'],['p2','Heavy','Heavy flow','Loose','tighten','--t','Yarrow,Blackberry rt','Astringents tone and slow flow.'],['p3','Hot flash','Hot flashes','Hot','cool','c--','Sage,Hibiscus,Lemon balm','Sage is the classic for hot flashes and night sweats.'],['p4','Milk','Low milk supply','Depleted','nourish','---','Fenugreek,Moringa','These herbs support milk supply.']]};
+const LEAF={},NODE={};
+for(const s in SY)SY[s].forEach(nd=>{const fork=Array.isArray(nd[3]);const mk=(a,node)=>({id:a[0],ans:a[1],full:a[2],st:a[3],dir:a[4],rec:a[5],herbs:a[6].split(','),why:a[7],node});const lv=fork?nd[3].map(a=>mk(a,nd[0])):[mk(nd,nd[0])];lv.forEach(l=>LEAF[l.id]=l);NODE[nd[0]]={id:nd[0],lab:nd[1],fork,q:fork?nd[2]:null,leaves:lv,herbs:new Set(lv.flatMap(l=>l.herbs))}});
+const ORD=['temp','moist','ten','type','act','sys','sym','uses','taste'];
+const FW=[['en','Herbal energetics','The qualities of an herb',[['temp','Temperature','Hot or cold','c'],['moist','Moisture','Wet or dry','c'],['ten','Tension','Tight or loose','c']]],['ac','Herbal actions','What an herb does',[['act','Actions','What it does','m'],['type','Nervines and adaptogens','Calm, lift, adapt','c']]],['bs','Body systems','Where an herb works',[['sys','Systems','Where it works','m'],['sym','Symptoms','What you feel','m'],['uses','Common uses','Classic uses','m']]],['ta','Taste','Flavor as a clue',[['taste','Taste','Flavor tells you','m']]]];
+const RI={temp:0,moist:1,ten:2};
+const BR='#C2A26B',TX='#EDE6D9',TS='#B5A994',RF='#3A2431',RS='#9C7590';
+const P="http://www.w3.org/2000/svg",n=H.length,rad=a=>a*Math.PI/180;
+let ci='temp',cm='sym',fw='bs',sh=null,pend=null,cup=[],selF=null;const f={};
+try{const s=JSON.parse(localStorage.getItem('bsCup')||'[]');cup=s.map(nm=>H.findIndex(h=>h[0]===nm)).filter(i=>i>=0)}catch(e){cup=[]}
+function saveCup(){try{localStorage.setItem('bsCup',JSON.stringify(cup.map(i=>H[i][0])))}catch(e){}}
+const hp=H.map((h,i)=>{const a=i*360/n-90;return[Math.cos(rad(a))*150,Math.sin(rad(a))*150,a]});
+const tempAng={};['w','n','c'].forEach(k=>{const idx=H.map((h,i)=>h[1]===k?i:-1).filter(i=>i>=0);tempAng[k]=idx.reduce((s,i)=>s+i,0)/idx.length*360/n-90});
+function el(t,at,par){const e=document.createElementNS(P,t);for(const k in at)e.setAttribute(k,at[k]);par.appendChild(e);return e}
+const has=(h,L,c)=>h[LY[L].k].includes(c);
+function mx(h,s1,s2){for(const L in f){if(!f[L]||L===s1||L===s2)continue;if(L==='sym'){if(!LEAF[f.sym].herbs.includes(h[0]))return false;continue}if(L==='sys'&&f.sym)continue;if(!has(h,L,f[L]))return false}return true}
+const nm=(L,c)=>{if(L==='sym')return LEAF[c].full;const x=LY[L].nodes.find(z=>z[0]===c);return x?(x[4]||(x.length===3?x[2]:x[1])):''};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const Lg=document.getElementById('L'),Ng=document.getElementById('N');
+function ui(){const F=document.getElementById('fws');F.innerHTML='';FW.forEach(([id,lab,tag,subs])=>{const b=document.createElement('button');b.className='tab'+(fw===id?' on':'');b.setAttribute('aria-pressed',fw===id);b.innerHTML=`<span>${lab}</span><small>${tag}</small>`;b.onclick=()=>{fw=id;if(!subs.some(([k,,,r])=>(r==='c'?ci:cm)===k)){const[k,,,r]=subs[0];r==='c'?ci=k:cm=k}draw()};F.appendChild(b)});
+const [,lab,tag,subs]=FW.find(x=>x[0]===fw),pn=document.getElementById('panel');
+pn.innerHTML=`<div class="panel-h"><span>${lab}</span><span class="eyebrow">Choose a lens</span></div>`;
+subs.forEach(([k,l2,d,r])=>{const on=(r==='c'?ci:cm)===k,b=document.createElement('button');b.className='lens'+(on?' on':'');b.setAttribute('aria-pressed',on);b.innerHTML=`<span class="l"><span class="dot"></span>${l2}</span><small>${d}</small>`;b.onclick=()=>{r==='c'?ci=k:cm=k;draw()};pn.appendChild(b)});
+document.getElementById('view').textContent=`Center circles: ${LY[ci].name}   ·   Ring: ${cm==='sym'?(f.sys?nm('sys',f.sys)+' symptoms':'pick a body system'):LY[cm].name}`}
+function ringNodes(){
+if(cm!=='sym')return LY[cm].nodes.map(([c,lab])=>{const sel=f[cm]===c,cnt=H.filter(h=>mx(h,cm)&&has(h,cm,c)).length;return{c,lab,cnt,sel,off:(f[cm]&&!sel)||!cnt,link:h=>has(h,cm,c),tap:()=>{f[cm]=sel?null:c;sh=null}}});
+if(!f.sys)return LY.sys.nodes.map(([c,lab])=>({c,lab,cnt:SY[c].length,sel:false,off:false,link:h=>has(h,'sys',c),tap:()=>{f.sys=c;f.sym=null;pend=null;sh=null}}));
+return SY[f.sys].map(nd=>{const N0=NODE[nd[0]],sel=(f.sym&&LEAF[f.sym].node===N0.id)||pend===N0.id,cnt=H.filter(h=>N0.herbs.has(h[0])&&mx(h,'sym','sys')).length;return{c:N0.id,lab:N0.lab,cnt,sel,off:(f.sym||pend)&&!sel,big:true,link:h=>f.sym&&sel?LEAF[f.sym].herbs.includes(h[0]):N0.herbs.has(h[0]),tap:()=>{sh=null;if(N0.fork){if(sel){pend=null;f.sym=null}else{pend=N0.id;f.sym=null}}else{f.sym=f.sym===N0.id?null:N0.id;pend=null}}}})}
+function txt(x,y,s,fill,sz,g,an){const t=el('text',{x,y,fill,'font-size':sz,'font-family':"Karla, system-ui, sans-serif",'text-anchor':an||'middle','dominant-baseline':'central'},g);t.textContent=s;return t}
+function draw(){ui();Lg.innerHTML='';Ng.innerHTML='';const any=Object.values(f).some(x=>x);
+const IN=LY[ci],ip={},mp={},RN=ringNodes(),rsel=RN.some(r=>r.sel);
+IN.nodes.forEach((nd,i)=>{const a=ci==='temp'?tempAng[nd[0]]:[-90,30,150][i];ip[nd[0]]=[Math.cos(rad(a))*52,Math.sin(rad(a))*52]});
+RN.forEach((r,i)=>{const a=i*360/RN.length-70;mp[r.c]=[Math.cos(rad(a))*108,Math.sin(rad(a))*108]});
+const col=c=>IN.nodes.find(z=>z[0]===c)||null;
+el('circle',{cx:0,cy:0,r:150,fill:'none',stroke:'rgba(237,230,217,.06)','stroke-width':1},Lg);
+H.forEach((h,i)=>{const m=mx(h),p=hp[i],iv=h[IN.k],cn=col(iv),q=cn?ip[iv]:null;
+if((any&&m)||sh===i){if(q)el('line',{x1:q[0],y1:q[1],x2:p[0],y2:p[1],stroke:cn[3],'stroke-width':1.6,opacity:.8},Lg);RN.forEach(r=>{if(r.link(h)&&(!rsel||r.sel||sh===i)){const u=mp[r.c];el('line',{x1:u[0],y1:u[1],x2:p[0],y2:p[1],stroke:RS,'stroke-width':1.2,opacity:.7},Lg)}})}
+else if(q)el('line',{x1:q[0],y1:q[1],x2:p[0],y2:p[1],stroke:cn[3],'stroke-width':.6,opacity:any?.1:.28},Lg)});
+H.forEach((h,i)=>{const m=mx(h),p=hp[i],cn=col(h[IN.k]),g=el('g',{class:'n '+((any&&!m)||(sh!==null&&sh!==i&&!any)?'dim':''),role:'button','aria-label':h[0]},Ng);
+if(cup.includes(i))el('circle',{cx:p[0],cy:p[1],r:11,fill:'none',stroke:BR,'stroke-width':2},g);
+el('circle',{cx:p[0],cy:p[1],r:sh===i?9:6.5,fill:cn?cn[2]:'#2E382F',stroke:sh===i?BR:(cn?cn[3]:'#6B6558'),'stroke-width':sh===i?2:1,'stroke-dasharray':cn?'none':'2 2'},g);
+el('circle',{cx:p[0],cy:p[1],r:16,fill:'transparent'},g);
+const a=p[2],fl=a>90&&a<270,t=el('text',{x:0,y:0,fill:sh===i?'#F1E2C2':'#D6CCB8','font-size':13,'font-family':"Karla, system-ui, sans-serif",'dominant-baseline':'central','text-anchor':fl?'end':'start',transform:`rotate(${fl?a+180:a} ${p[0]} ${p[1]}) translate(${p[0]+(fl?-14:14)} ${p[1]})`},g);t.textContent=h[0];
+g.onclick=()=>{sh=sh===i?null:i;draw()}});
+RN.forEach(r=>{const p=mp[r.c],b=r.big?27:23,g=el('g',{class:'n '+(r.off?'soft':''),role:'button','aria-label':r.lab},Ng);
+el('circle',{cx:p[0],cy:p[1],r:r.sel?b+3:(r.off?b-3:b),fill:RF,stroke:r.sel?BR:RS,'stroke-width':r.sel?2.5:.8},g);
+txt(p[0],p[1]-5,r.lab,TX,11,g);txt(p[0],p[1]+9,r.cnt,TS,11,g);
+g.onclick=()=>{r.tap();draw()}});
+const rec=f.sym?LEAF[f.sym].rec:null,ri=RI[ci];
+IN.nodes.forEach(([c,lab,fill,line])=>{const p=ip[c],cnt=H.filter(h=>mx(h,ci)&&has(h,ci,c)).length,off=(f[ci]&&f[ci]!==c)||!cnt,g=el('g',{class:'n '+(off?'soft':''),role:'button','aria-label':lab},Ng);
+if(rec&&ri!==undefined&&rec[ri]===c)el('circle',{cx:p[0],cy:p[1],r:38,fill:'none',stroke:BR,'stroke-width':2,'stroke-dasharray':'4 3'},g);
+el('circle',{cx:p[0],cy:p[1],r:f[ci]===c?32:(off?24:29),fill,stroke:f[ci]===c?BR:line,'stroke-width':f[ci]===c?2.5:1,'stroke-dasharray':off?'3 3':'none'},g);
+txt(p[0],p[1]-5,lab,TX,11,g);txt(p[0],p[1]+9,cnt,'#D6CCB8',11,g);
+g.onclick=()=>{f[ci]=f[ci]===c?null:c;sh=null;draw()}});
+const pa=document.getElementById('path');pa.innerHTML='';const act=ORD.filter(L=>f[L]);
+if(!act.length)pa.innerHTML='<span style="font-size:13px;color:var(--muted)">Tap circles to filter. Picks stay when you switch frameworks.</span>';
+else{act.forEach(L=>{const b=document.createElement('button');b.className='crumb';b.textContent=nm(L,f[L])+'  ×';b.setAttribute('aria-label','Remove '+nm(L,f[L]));b.onclick=()=>{f[L]=null;if(L==='sys'){f.sym=null;pend=null}draw()};pa.appendChild(b)});const s=document.createElement('span');const k=H.filter(h=>mx(h)).length;s.style.cssText='font-size:13px;color:var(--muted)';s.textContent=k+' herb'+(k===1?'':'s');pa.appendChild(s)}
+card(any);cupR()}
+function card(any){const c=document.getElementById('card');
+if(sh!==null){const h=H[sh];const grp=[['Herbal energetics',['temp','moist','ten']],['Herbal actions',['type','act']],['Body systems',['sys','uses']],['Taste',['taste']]];let r='';grp.forEach(([g,Ls])=>{const v=[];Ls.forEach(L=>[...h[LY[L].k]].forEach(x=>{const t=nm(L,x);if(t&&!t.startsWith('Neutral'))v.push(t)}));if(!v.length)return;r+=`<div style="margin-top:10px"><span class="eyebrow">${g}</span><br>${v.map(t=>`<span class="tg">${t}</span>`).join('')}</div>`});
+r+=`<div style="margin-top:10px"><span class="eyebrow">Best as</span><br>${[...h[10]].map(x=>`<span class="tg" style="background:rgba(194,162,107,.15);color:var(--brass-ink)">${FM[x][0]}</span>`).join('')}</div>`;
+const inC=cup.includes(sh);
+c.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><div class="serif" style="font-size:28px;color:var(--cream);line-height:1.1">${h[0]}</div><button id="addc" class="btn brass">${inC?'Remove from cup':'Add to cup'}</button></div><div style="font-size:14px;color:var(--muted);margin-top:2px">${h[8]}</div>${r}`;
+const i0=sh;c.querySelector('#addc').onclick=()=>{cup=cup.includes(i0)?cup.filter(x=>x!==i0):[...cup,i0];saveCup();draw()};return}
+if(pend){const N0=NODE[pend];c.innerHTML=`<div class="serif" style="font-size:24px;color:var(--cream);line-height:1.2">${N0.q}</div>`;N0.leaves.forEach(l=>{const b=document.createElement('button');b.className='lens';b.textContent=l.ans;b.onclick=()=>{f.sym=l.id;pend=null;draw()};c.appendChild(b)});return}
+if(f.sym){const l=LEAF[f.sym];const look=[];if(l.rec[0]!=='-')look.push(nm('temp',l.rec[0]));if(l.rec[1]!=='-')look.push(nm('moist',l.rec[1]));if(l.rec[2]!=='-')look.push(nm('ten',l.rec[2]).split(' (')[0]);
+const hs=H.map((h,i)=>[h,i]).filter(([h])=>mx(h));
+c.innerHTML=`<div class="serif" style="font-size:28px;color:var(--cream);line-height:1.1">${l.full}</div><div style="font-size:14px;margin-top:6px"><span class="mu">Tissue state:</span> ${l.st}  →  ${l.dir}</div><div style="font-size:14px;color:var(--muted);margin-top:6px;line-height:1.6">${l.why}</div>${look.length?`<div style="font-size:13px;margin-top:8px;color:var(--brass-ink)">Look for: ${look.join(' · ')}. Dashed brass rings mark these in the center.</div>`:''}<div class="eyebrow" style="margin-top:12px">Tap a herb</div><div id="hb"></div>`;
+const hb=c.querySelector('#hb');hs.forEach(([h,i])=>{const b=document.createElement('button');b.className='tg';b.textContent=h[0];b.onclick=()=>{sh=i;draw()};hb.appendChild(b)});if(!hs.length)hb.textContent='No matches with your other filters.';return}
+const hint=t=>`<p class="hint">${t}</p>`;
+if(cm==='sym'&&!f.sys){c.innerHTML=hint('Pick a body system on the ring to see its symptoms.');return}
+if(cm==='sym'&&f.sys){c.innerHTML=hint('Tap a symptom. Some will ask a quick question to read the tissue state.');return}
+const m=H.filter(h=>mx(h));if(any)c.innerHTML=`<div class="eyebrow" style="margin-bottom:4px">Matches. Tap a herb on the wheel for its full profile</div><div style="font-size:15px;line-height:1.6">${m.length?m.map(h=>h[0]).join(' · '):'No herbs here yet. A gap to fill?'}</div>`;
+else c.innerHTML=hint('Energetics fill the center circles. Actions, body systems, and taste fill the plum ring.')}
+function meter(lab,L,R,s,tgt,cl,cr){const pos=50+s*44;const lean=Math.abs(s)<.25?'Balanced':'Leans '+(s<0?L:R).toLowerCase();
+return `<div style="margin-top:14px"><div style="display:flex;justify-content:space-between;gap:6px;font-size:12px"><span style="color:${cl}">${L}</span><span style="color:var(--ink);font-weight:500">${lab} · ${lean}</span><span style="color:${cr}">${R}</span></div><div style="position:relative;height:8px;border-radius:4px;margin:6px 0;background:linear-gradient(90deg,${cl}55,#2E382F 50%,${cr}55)">${tgt?`<div style="position:absolute;top:-5px;bottom:-5px;${tgt<0?'left:2px':'right:2px'};border-left:2px dashed ${BR}"></div>`:''}<div style="position:absolute;left:50%;top:0;bottom:0;border-left:.5px solid rgba(237,230,217,.25)"></div><div style="position:absolute;top:50%;left:${pos}%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#F1E2C2;border:2px solid #1B221D"></div></div></div>`}
+function prepForms(hs){
+  const ext=hs.filter(h=>/External/.test(h[8]));
+  const out=[];
+  const dOnly=hs.filter(h=>h[10].includes('D')&&!h[10].includes('T')),tH=hs.filter(h=>h[10].includes('T'));
+  for(const k of F_ORD){
+    if(ext.length&&INTERNAL.includes(k))continue;
+    let fit;
+    if(k==='W'){if(!dOnly.length||!tH.length)continue;fit=hs.filter(h=>h[10].includes('D')||h[10].includes('T'))}
+    else fit=hs.filter(h=>h[10].includes(k));
+    if(fit.length)out.push({k,fit});
+  }
+  out.sort((a,b)=>b.fit.length-a.fit.length||F_ORD.indexOf(a.k)-F_ORD.indexOf(b.k));
+  return {out,ext};
+}
+function recipeSteps(k,hs){
+  if(k!=='W')return FM[k][2];
+  const d=hs.filter(h=>h[10].includes('D')&&!h[10].includes('T')).map(h=>h[0]).join(', '),t=hs.filter(h=>h[10].includes('T')).map(h=>h[0]).join(', ');
+  return [`Simmer the tough parts (${d}) in a covered pot: 1 tbsp per 12 oz water for 15 minutes.`,'Turn off the heat.',`Add the tender herbs (${t}), cover, and steep 10 minutes.`,'Strain and sip. Both kinds get what they need without overcooking the leaves.'];
+}
+function cupR(){const b=document.getElementById('cupbox');
+const cupSvg=`<svg width="26" height="22" viewBox="0 0 26 22" aria-hidden="true"><path d="M3 6h16v6a7 7 0 0 1-7 7h-2a7 7 0 0 1-7-7z" fill="none" stroke="${BR}" stroke-width="1.6"/><path d="M19 8h2a3 3 0 0 1 0 6h-2" fill="none" stroke="${BR}" stroke-width="1.6"/><path d="M8 1.5c0 1.5 1.5 1.5 1.5 3M12.5 1.5c0 1.5 1.5 1.5 1.5 3" fill="none" stroke="${BR}" stroke-width="1.2" stroke-linecap="round"/></svg>`;
+if(!cup.length){b.innerHTML=`<div style="display:flex;gap:12px;align-items:center">${cupSvg}<div><div class="serif" style="font-size:22px;color:var(--cream)">Add to your cup</div><p class="hint" style="font-size:13px">Tap a herb on the wheel, then Add to cup. You'll see the blend's balance and how to make it.</p></div></div>`;return}
+const hs=cup.map(i=>H[i]),avg=fn=>hs.reduce((s,h)=>s+fn(h),0)/hs.length;
+const tS=avg(h=>h[1]==='w'?1:h[1]==='c'?-1:0),mS=avg(h=>h[2]==='m'?1:h[2]==='d'?-1:0),xS=avg(h=>h[9]==='r'?1:h[9]==='t'?-1:0),eS=avg(h=>h[3]==='u'?1:h[3]==='r'?-1:0);
+const rec=f.sym?LEAF[f.sym].rec:'---',tg=(v,a,z)=>v===a?-1:v===z?1:null;
+const fl=[],tn={w:'warming',c:'cooling',m:'moistening',d:'drying',r:'relaxing',t:'tightening'};
+if(f.sym){const l=LEAF[f.sym];hs.forEach(h=>{[[1,0],[2,1],[9,2]].forEach(([k,ri])=>{const want=rec[ri],v=h[k];if(want!=='-'&&v!=='n'&&v!==want&&tn[v])fl.push(['var(--warn)',`${h[0]} is ${tn[v]}, but ${l.full.toLowerCase()} needs ${tn[want]}.`])})})}
+const T=c=>hs.some(h=>h[3]===c),A=c=>hs.some(h=>h[6].includes(c));
+if(T('r')&&T('u'))fl.push([BR,'Calming and uplifting together. Good for calm focus, but it works against sleep.']);
+if(A('A')&&A('D'))fl.push([BR,'Tightening and soothing herbs together can cancel out, unless that balance is on purpose.']);
+if(hs.some(h=>h[1]==='w')&&hs.some(h=>h[1]==='c'))fl.push([BR,'Warming and cooling together balances the blend. Check the meter for the overall lean.']);
+hs.forEach(h=>{if(/Avoid|External/.test(h[8]))fl.push(['var(--danger)',`${h[0]}: ${h[8].split('. ').slice(1).join('. ')}`])});
+const {out,ext}=prepForms(hs);
+if(!out.find(o=>o.k===selF))selF=out.length?out[0].k:null;
+b.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="display:flex;gap:10px;align-items:center">${cupSvg}<span class="serif" style="font-size:24px;color:var(--cream)">Your cup</span><span class="mu" style="font-size:13px">${cup.length} herb${cup.length===1?'':'s'}</span></div><button id="clr" class="btn" style="font-size:12px;padding:6px 10px">Empty</button></div><div id="cpills" style="margin-top:6px"></div>${meter('Temp','Cooling','Warming',tS,tg(rec[0],'c','w'),'#5E9C94','#C77A5C')}${meter('Moisture','Dry','Moist',mS,tg(rec[1],'d','m'),'#C4A060','#6FA38A')}${meter('Tension','Tighten','Relax',xS,tg(rec[2],'t','r'),'#B07A98','#93A86E')}${meter('Energy','Calming','Uplifting',eS,null,'#B07A98','#C4A060')}${f.sym&&rec!=='---'?`<div style="font-size:12px;color:var(--brass-ink);margin-top:8px">Dashed brass marks show where ${LEAF[f.sym].full.toLowerCase()} wants the blend to lean.</div>`:''}<div id="flg"></div><div class="sec"><div class="serif" style="font-size:22px;color:var(--cream)">How to make it</div><p class="hint" style="font-size:13px">${ext.length?`${ext.map(h=>h[0]).join(' and ')} ${ext.length>1?'are':'is'} external only, so this cup is a topical blend.`:'The best ways to prepare these herbs, ranked by how many in your cup they suit.'}</p><div class="forms" id="forms"></div><div id="rcp"></div></div>`;
+const cp=b.querySelector('#cpills');cup.forEach(i=>{const x=document.createElement('button');x.className='tg';x.textContent=H[i][0]+'  ×';x.setAttribute('aria-label','Remove '+H[i][0]);x.onclick=()=>{cup=cup.filter(z=>z!==i);saveCup();draw()};cp.appendChild(x)});
+b.querySelector('#flg').innerHTML=fl.map(([cl,t])=>`<div class="fl"><i style="background:${cl}"></i><span>${t}</span></div>`).join('')||`<div class="fl" style="color:var(--ok)"><i style="background:var(--ok)"></i><span>No clashes. These herbs pull the same way.</span></div>`;
+const fo=b.querySelector('#forms');
+out.forEach((o,ix)=>{const x=document.createElement('button');x.className='form'+(selF===o.k?' on':'');x.setAttribute('aria-pressed',selF===o.k);x.innerHTML=`${ix===0?'<span class="best">Best fit</span>':''}<b>${FM[o.k][0]}</b><small>${o.fit.length===hs.length?(hs.length===1?'Suits this herb':`All ${hs.length} herbs`):`${o.fit.length} of ${hs.length} herbs`}</small>`;x.onclick=()=>{selF=o.k;cupR()};fo.appendChild(x)});
+if(!out.length){fo.innerHTML='<p class="hint" style="font-size:13px">No single method suits this mix. Try splitting it into two cups.</p>'}
+const sel=out.find(o=>o.k===selF);
+if(sel){const steps=recipeSteps(sel.k,hs),miss=hs.filter(h=>!sel.fit.includes(h));
+b.querySelector('#rcp').innerHTML=`<div class="recipe"><div class="eyebrow">${FM[sel.k][1]}</div><h3>${FM[sel.k][0]}</h3><div class="fits"><span class="mu">Works for:</span> ${sel.fit.map(h=>h[0]).join(', ')}</div>${miss.length?`<div class="fits"><span class="mu">Better another way:</span> ${miss.map(h=>`${h[0]} (${FM[h[10][0]][0].toLowerCase()})`).join(', ')}</div>`:''}<ol>${steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div>`}
+b.querySelector('#clr').onclick=()=>{cup=[];saveCup();draw()}}
+document.getElementById('rs').onclick=()=>{ORD.forEach(L=>f[L]=null);sh=null;pend=null;draw()};
+draw();
+})();
+</script>
+
+</body>
+</html>
